@@ -4,7 +4,7 @@ Module holds logic for model compilation.
 
 import ctypes
 # from llama_cpp import Llama
-from app.dependency.llama_cpp.llama import Llama
+from app.dependency.llama_cpp_python.llama_cpp.llama import Llama
 from app.core.settings import settings
 
 class CompiledModel:
