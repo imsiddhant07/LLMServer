@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 
 ENV GGML_CUDA=on
-RUN CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python
+RUN CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python \
+--extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu122
 
 # Install Python dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt
