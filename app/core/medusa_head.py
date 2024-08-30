@@ -1,33 +1,33 @@
 import torch
-import torch.nn as nn
 
-class MedusaHead(nn.Module):
+
+class MedusaHead(torch.nn.Module):
     def __init__(self, base_model, num_heads=3):
         super().__init__()
         self.base_model = base_model
         self.num_heads = num_heads
-        self.heads = nn.ModuleList([nn.Linear(base_model.config.hidden_size, base_model.config.vocab_size) for _ in range(num_heads)])
+        self.heads = torch.nn.ModuleList([
+            torch.nn.Linear(base_model.n_embd, base_model.n_vocab)
+            for _ in range(num_heads)
+        ])
 
     def forward(self, hidden_states):
-        base_logits = self.base_model.lm_head(hidden_states)
+        base_logits = torch.tensor(self.base_model.eval(hidden_states.tolist(), echo=False)['logits'])
         medusa_logits = [head(hidden_states) for head in self.heads]
         return base_logits, medusa_logits
 
-class MedusaModel:
-    def __init__(self, base_model):
-        self.medusa = MedusaHead(base_model)
-
-    def generate(self, text, max_tokens=100):
-        input_ids = self.base_model.tokenizer.encode(text, return_tensors="pt")
-        output_ids = input_ids.clone()
-
+    def generate(self, prompt, max_tokens=100):
+        input_ids = torch.tensor(self.base_model.tokenize(prompt))
         for _ in range(max_tokens):
-            hidden_states = self.base_model.model(output_ids)['last_hidden_state'][:, -1:]
-            base_logits, medusa_logits = self.medusa(hidden_states)
-
-            # Implement speculative decoding logic here
-            # This is a simplified version and needs to be expanded
-            next_token_id = torch.argmax(base_logits, dim=-1)
-            output_ids = torch.cat([output_ids, next_token_id], dim=-1)
-
-        return self.base_model.tokenizer.decode(output_ids[0])
+            hidden_states = torch.tensor(self.base_model.eval(input_ids.tolist(), echo=True)['hidden_states'][-1])
+            base_logits, medusa_logits = self.forward(hidden_states.unsqueeze(0))
+            
+            combined_logits = base_logits + sum(medusa_logits)
+            next_token = torch.argmax(combined_logits, dim=-1)
+            
+            input_ids = torch.cat([input_ids, next_token])
+            
+            if next_token.item() == self.base_model.token_eos():
+                break
+        
+        return self.base_model.detokenize(input_ids.tolist())

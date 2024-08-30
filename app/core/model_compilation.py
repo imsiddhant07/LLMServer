@@ -4,13 +4,18 @@ Module holds logic for model compilation.
 
 import ctypes
 from llama_cpp import Llama
+from app.core.settings import settings
 
 class CompiledModel:
     def __init__(self):
-        self.model = Llama(model_path="path/to/vicuna-7b.gguf", n_ctx=2048, n_threads=4)
+        self.model = Llama(
+            model_path=settings.MODEL_PATH,
+            n_ctx=settings.N_CTX,
+            n_threads=settings.N_THREADS
+        )
 
     def generate(self, text, max_tokens=100):
-        return self.model(text, max_tokens=max_tokens)['choices'][0]['text']
+        return self.model.generate(text, max_tokens=max_tokens)
 
 COMPILATION_MODEL_MAP = {
     'llama.cpp': CompiledModel()
