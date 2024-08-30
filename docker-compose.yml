@@ -9,10 +9,4 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    runtime: nvidia  # This line replaces the deploy section
