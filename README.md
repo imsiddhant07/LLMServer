@@ -1,2 +1,1 @@
-# LLMServer
-FastAPI server for model inference. 
+# Placeholder for README.md
