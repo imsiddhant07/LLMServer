@@ -1,21 +1,17 @@
-# Use NVIDIA CUDA base image
-FROM nvidia/cuda:12.2.0-base-ubuntu22.04
+# Use Python slim base image
+FROM python:3.11-slim-bullseye
 
 # Set working directory
 WORKDIR /app
 
-# Install Python and pip
-RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements file
 COPY requirements.txt .
-
-ENV GGML_CUDA=on
-RUN CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python \
---extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu122
 
 # Install Python dependencies
 RUN pip3 install --no-cache-dir -r requirements.txt
