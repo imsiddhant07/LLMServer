@@ -30,7 +30,7 @@ class DynamicBatcher:
                 inputs = [req['input'] for req in batch]
                 # outputs = [self.model.generate(input, max_tokens=100) for input in inputs]
                 outputs = [self.model.generate(text=input) for input in inputs]
-                
+                print('in batches', outputs)
                 # Distribute results
                 for req, output in zip(batch, outputs):
                     req['future'].set_result(output)

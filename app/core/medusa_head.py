@@ -1,14 +1,14 @@
 import torch
 
 
-class MedusaHead(torch.nn.Module):
+class MedusaHeadForTransformers(torch.nn.Module):
     def __init__(self, base_model, num_heads=3, device=None):
         super().__init__()
         self.base_model = base_model
         self.num_heads = num_heads
-        self.device = 'cpu' # device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.heads = torch.nn.ModuleList([
-            torch.nn.Linear(base_model.n_embd, base_model.n_vocab).to(self.device)
+            torch.nn.Linear(self.base_model.config.hidden_size, self.base_model.config.vocab_size).to(self.device)
             for _ in range(num_heads)
         ])
 

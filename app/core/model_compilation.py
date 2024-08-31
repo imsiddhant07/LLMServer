@@ -9,7 +9,7 @@ from app.core.settings import settings
 
 class CompiledModel:
     def __init__(self):
-        model_name = settings.MODEL_NAME  # Assuming MODEL_NAME is defined in settings
+        model_name = settings.MODEL_NAME
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForCausalLM.from_pretrained(model_name)
         model.eval()
