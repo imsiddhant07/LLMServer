@@ -20,18 +20,18 @@ RUN apt-get update && apt-get upgrade -y \
 COPY . .
 
 # Setting build related env vars
-ENV CUDA_DOCKER_ARCH=all
-ENV GGML_CUDA=1
+# ENV CUDA_DOCKER_ARCH=all
+# ENV GGML_CUDA=1
 
-# Install Python dependencies
-RUN python3 -m pip install --upgrade pip pytest cmake scikit-build setuptools fastapi uvicorn sse-starlette pydantic-settings starlette-context
+# # Install Python dependencies
+# RUN python3 -m pip install --upgrade pip pytest cmake scikit-build setuptools fastapi uvicorn sse-starlette pydantic-settings starlette-context
 
-# Install llama-cpp-python (build with cuda)
-RUN CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python
+# # Install llama-cpp-python (build with cuda)
+# RUN CMAKE_ARGS="-DGGML_CUDA=on" pip install llama-cpp-python
 
 # Install additional Python dependencies from requirements.txt if needed
-# COPY requirements.txt .
-# RUN pip3 install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Expose the port the app runs on
 EXPOSE 8000
