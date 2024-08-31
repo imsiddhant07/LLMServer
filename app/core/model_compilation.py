@@ -11,11 +11,11 @@ class CompiledModel:
     def __init__(self):
         model_name = settings.MODEL_NAME
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = AutoModelForCausalLM.from_pretrained(model_name)
-        model.eval()
+        self.model = AutoModelForCausalLM.from_pretrained(model_name)
+        self.model.eval()
         self.device = 'cpu' # torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.quantized_model = torch.quantization.quantize_dynamic(
-            model, 
+            self.model, 
             {torch.nn.Linear},
             dtype=torch.qint8
         ).to(self.device)
