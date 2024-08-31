@@ -2,21 +2,31 @@
 Module holds logic for model compilation.
 """
 
-import ctypes
-from llama_cpp import Llama
-# from app.dependency.llama_cpp_python.llama_cpp.llama import Llama
+# import ctypes
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from app.core.settings import settings
 
 class CompiledModel:
     def __init__(self):
-        self.model = Llama(
-            model_path=settings.MODEL_PATH,
-            n_ctx=settings.N_CTX,
-            n_threads=settings.N_THREADS
-        )
+        model_name = settings.MODEL_NAME  # Assuming MODEL_NAME is defined in settings
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForCausalLM.from_pretrained(model_name)
+        model.eval()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.quantized_model = torch.quantization.quantize_dynamic(
+            model, 
+            {torch.nn.Linear},
+            dtype=torch.qint8
+        ).to(self.device)
 
     def generate(self, text, max_tokens=100):
-        return self.model.generate(text, max_tokens=max_tokens)
+        input_ids = self.tokenizer(text, return_tensors="pt").input_ids.to(self.device)
+        with torch.no_grad():
+            output = self.quantized_model.generate(input_ids, max_length=max_tokens)
+        
+        return output.cpu().detach()
+        # return self.tokenizer.decode(output[0], skip_special_tokens=True)
 
 COMPILATION_MODEL_MAP = {
     'llama.cpp': CompiledModel()

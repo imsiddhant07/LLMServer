@@ -1,4 +1,5 @@
 fastapi
 uvicorn[standard]
 pydantic
-llama-cpp-python
+transformers
+accelerate

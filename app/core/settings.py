@@ -2,6 +2,7 @@
 
 class Settings:
     MODEL_PATH: str = "/home/nlp/siddhant/models/vicuna-7b-v1.3.gguf"
+    MODEL_NAME: str = "lmsys/vicuna-7b-v1.3"
     N_CTX: int = 2048
     N_THREADS: int = 4
 
