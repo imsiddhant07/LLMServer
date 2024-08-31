@@ -13,14 +13,14 @@ class MedusaHeadForTransformers(torch.nn.Module):
         ])
 
     def forward(self, hidden_states):
-        base_logits = torch.tensor(self.base_model.model.eval(hidden_states.cpu().tolist(), echo=False)['logits']).to(self.device)
+        base_logits = torch.tensor(self.base_model.model.eval(hidden_states.cpu().tolist())['logits']).to(self.device)
         medusa_logits = [head(hidden_states) for head in self.heads]
         return base_logits, medusa_logits
 
     def generate(self, prompt, max_tokens=100):
         input_ids = torch.tensor(self.base_model.tokenizer.encode(prompt)).to(self.device)
         for _ in range(max_tokens):
-            hidden_states = torch.tensor(self.base_model.model.eval(input_ids.cpu().tolist(), echo=True)['hidden_states'][-1]).to(self.device)
+            hidden_states = torch.tensor(self.base_model.model.eval(input_ids.cpu().tolist())['hidden_states'][-1]).to(self.device)
             base_logits, medusa_logits = self.forward(hidden_states.unsqueeze(0))
             
             combined_logits = base_logits + sum(medusa_logits)
