@@ -13,7 +13,7 @@ class CompiledModel:
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForCausalLM.from_pretrained(model_name)
         model.eval()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = 'cpu' # torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.quantized_model = torch.quantization.quantize_dynamic(
             model, 
             {torch.nn.Linear},

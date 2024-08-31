@@ -6,7 +6,7 @@ class MedusaHead(torch.nn.Module):
         super().__init__()
         self.base_model = base_model
         self.num_heads = num_heads
-        self.device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = 'cpu' # device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.heads = torch.nn.ModuleList([
             torch.nn.Linear(base_model.n_embd, base_model.n_vocab).to(self.device)
             for _ in range(num_heads)

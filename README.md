@@ -9,3 +9,4 @@ python examples/convert_legacy_llama.py <path/to/vicuna-7b-v1.3> --outfile path/
 
 python examples/convert_legacy_llama.py <path/to/vicuna-7b-v1.3> --outfile path/to/vicuna-7b-v1.3.gguf
  ```
+ 
